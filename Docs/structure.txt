@@ -1,0 +1,6 @@
+Por que esta estructura?
+
+model: define nuestras estructuras de datos
+store: maneja la base de datos (repository pattern)
+service: contiene la logica de negocio 
+transport: maneja http requests/responses
