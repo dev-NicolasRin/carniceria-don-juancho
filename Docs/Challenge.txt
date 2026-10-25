@@ -1,0 +1,76 @@
+RETO: API DE INVENTARIO PARA UNA CARNICERIA
+============================================
+
+Objetivo: construir una API REST en Go con SQLite que gestione los cortes
+de carne de una carniceria y sus ventas basicas.
+Tiempo estimado: ~3 horas.
+
+
+MODELO DE DATOS
+---------------
+
+Tabla cortes
+  - id (PK, autoincremental)
+  - nombre (ej. "Lomo fino")
+  - tipo_animal (res, cerdo, pollo, cordero)
+  - precio_kg (decimal)
+  - stock_kg (decimal)
+  - created_at
+
+Tabla ventas
+  - id (PK)
+  - corte_id (FK a cortes)
+  - cantidad_kg
+  - total (precio_kg x cantidad_kg al momento de la venta)
+  - created_at
+
+
+ENDPOINTS
+---------
+
+  POST    /cortes        Crear un corte
+  GET     /cortes        Listar cortes (filtro opcional ?tipo=res)
+  GET     /cortes/{id}   Obtener un corte
+  PUT     /cortes/{id}   Actualizar precio y stock
+  DELETE  /cortes/{id}   Eliminar un corte
+  POST    /ventas        Registrar una venta
+  GET     /ventas        Listar ventas
+
+
+REGLAS DE NEGOCIO
+-----------------
+
+1. No se puede crear un corte con precio o stock negativo.
+2. Al registrar una venta, se descuenta el stock del corte.
+3. Si no hay suficiente stock, responder 409 Conflict con un mensaje claro.
+4. La venta y el descuento de stock van en UNA transaccion
+   (db.Begin() / Commit() / Rollback()).
+5. Respuestas siempre en JSON, con codigos HTTP correctos (201, 404, 400, etc.).
+
+
+CHECKLIST
+---------
+
+[ ] Inicializar el modulo (go mod init) y conectar con SQLite
+[ ] Crear las tablas al arrancar
+[ ] CRUD de cortes
+[ ] Endpoint de ventas con transaccion
+[ ] Validaciones y manejo de errores
+[ ] Probar todo con curl o Postman/Bruno
+
+
+PISTAS
+------
+
+- Puedes usar solo la libreria estandar (net/http, que desde Go 1.22
+  soporta rutas como "GET /cortes/{id}") o un router ligero como chi.
+- Driver de SQLite: modernc.org/sqlite (sin CGO) o mattn/go-sqlite3.
+- Usa database/sql directamente, sin ORM, para practicar las consultas.
+
+
+EXTRAS OPCIONALES (solo si te sobra tiempo)
+-------------------------------------------
+
+- GET /reportes/ventas-del-dia  -> total vendido hoy
+- Alerta de stock bajo: GET /cortes?stock_bajo=true (menos de 5 kg)
+- Un par de tests con httptest
