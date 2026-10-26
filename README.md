@@ -1,4 +1,4 @@
-# 🥩 Carnicería Don Juancho — API de inventario
+# 🥩 Carnicería Don Juancho — API 
 
 API REST en **Go + SQLite** para gestionar los cortes de carne de una carnicería y registrar sus ventas descontando stock de forma transaccional.
 
