@@ -22,7 +22,7 @@ func New(db *sql.DB) Store {
 }
 
 func (carniceria *store) GetAll() ([]*model.Corte, error) {
-	q := "SELECT id, nombre, tipo_animal, precio_kg, stock kg, fecha_creacion"
+	q := "SELECT id, nombre, tipo_animal, precio_kg, stock kg, fecha_creacion FROM cortes"
 	rows, err := carniceria.db.Query(q)
 
 	if err != nil {
@@ -43,4 +43,49 @@ func (carniceria *store) GetAll() ([]*model.Corte, error) {
 		return nil, err
 	}
 	return Cortes, nil
+}
+
+func (carniceria *store) GetByID(id int) (*model.Corte, error) {
+	q := "SELECT id, nombre, tipo_animal, precio_kg, stock kg, fecha_creacion FROM cortes WHERE id = ?"
+	corte_encontrado := model.Corte{}
+	err := carniceria.db.QueryRow(q, id).Scan(&corte_encontrado.ID, &corte_encontrado.Nombre, &corte_encontrado.TipoAnimal,
+		&corte_encontrado.PrecioKilo, &corte_encontrado.StockKilos, &corte_encontrado.FechaCreacion)
+	if err != nil {
+		return nil, err
+	}
+	return &corte_encontrado, nil
+
+}
+
+func (carniceria *store) Create(corte *model.Corte) (*model.Corte, error) {
+	q := "INSERT INTO cortes (nombre, tipo_animal, precio_kg, stock kg) VALUES (?, ?, ?, ?)"
+	resp, err := carniceria.db.Exec(q, corte.Nombre, corte.TipoAnimal, corte.PrecioKilo, corte.StockKilos)
+	if err != nil {
+		return nil, err
+	}
+	id, err := resp.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+	corte.ID = int(id)
+	return corte, nil
+}
+
+func (carniceria *store) Update(id int, corte *model.Corte) (*model.Corte, error) {
+	q := "UPDATE cortes SET precio_kg = ?, stock_kg = ? WHERE id = ?"
+	_, err := carniceria.db.Exec(q, corte.PrecioKilo, corte.StockKilos)
+	if err != nil {
+		return nil, err
+	}
+	corte.ID = id
+	return corte, nil
+}
+
+func (carniceria *store) Delete(id int) error {
+	q := `DELETE from cortes WHERE id = ?`
+	_, err := carniceria.db.Exec(q, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

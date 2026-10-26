@@ -8,5 +8,5 @@ type Corte struct {
 	TipoAnimal    string    `json:"tipo_animal"`
 	PrecioKilo    float64   `json:"precio_kg"`
 	StockKilos    float64   `json:"stock_kg"`
-	FechaCreacion time.Time `json:"creado_el"`
+	FechaCreacion time.Time `json:"fecha_creacion"`
 }
