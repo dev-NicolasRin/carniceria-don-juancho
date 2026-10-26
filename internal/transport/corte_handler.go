@@ -25,6 +25,7 @@ func (handler *CorteHandler) HandleCortes(writer http.ResponseWriter, reader *ht
 		cortes, err := handler.service.ObtenTodosLosCortes()
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		writer.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(writer).Encode(cortes)
@@ -37,6 +38,7 @@ func (handler *CorteHandler) HandleCortes(writer http.ResponseWriter, reader *ht
 		creado, err := handler.service.CrearCorte(corte)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
 		}
 		writer.WriteHeader(http.StatusCreated)
 		writer.Header().Set("Content-Type", "application/json")
@@ -51,6 +53,7 @@ func (handler *CorteHandler) HandleCorteByID(writer http.ResponseWriter, reader 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(writer, "no lo encontre", http.StatusBadRequest)
+		return
 	}
 
 	switch reader.Method {
@@ -60,7 +63,7 @@ func (handler *CorteHandler) HandleCorteByID(writer http.ResponseWriter, reader 
 			http.Error(writer, "no se encontro jeje", http.StatusBadRequest)
 			return
 		}
-		writer.Header().Set("Content-Type", "applications/json")
+		writer.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(writer).Encode(corte)
 	case http.MethodPut:
 		var corte model.Corte

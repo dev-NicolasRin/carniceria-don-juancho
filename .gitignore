@@ -1,0 +1,17 @@
+# Binarios
+carniceria-don-juanchito
+*.exe
+*.out
+
+# Base de datos SQLite
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Entorno y editores
+.env
+.DS_Store
+.idea/
+.vscode/

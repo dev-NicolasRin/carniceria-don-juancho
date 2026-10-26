@@ -22,7 +22,7 @@ func New(db *sql.DB) Store {
 }
 
 func (carniceria *store) GetAll() ([]*model.Corte, error) {
-	q := "SELECT id, nombre, tipo_animal, precio_kg, stock kg, fecha_creacion FROM cortes"
+	q := "SELECT id, nombre, tipo_animal, precio_kg, stock_kg, fecha_creacion FROM cortes"
 	rows, err := carniceria.db.Query(q)
 
 	if err != nil {
@@ -46,7 +46,7 @@ func (carniceria *store) GetAll() ([]*model.Corte, error) {
 }
 
 func (carniceria *store) GetByID(id int) (*model.Corte, error) {
-	q := "SELECT id, nombre, tipo_animal, precio_kg, stock kg, fecha_creacion FROM cortes WHERE id = ?"
+	q := "SELECT id, nombre, tipo_animal, precio_kg, stock_kg, fecha_creacion FROM cortes WHERE id = ?"
 	corte_encontrado := model.Corte{}
 	err := carniceria.db.QueryRow(q, id).Scan(&corte_encontrado.ID, &corte_encontrado.Nombre, &corte_encontrado.TipoAnimal,
 		&corte_encontrado.PrecioKilo, &corte_encontrado.StockKilos, &corte_encontrado.FechaCreacion)
@@ -58,7 +58,7 @@ func (carniceria *store) GetByID(id int) (*model.Corte, error) {
 }
 
 func (carniceria *store) Create(corte *model.Corte) (*model.Corte, error) {
-	q := "INSERT INTO cortes (nombre, tipo_animal, precio_kg, stock kg) VALUES (?, ?, ?, ?)"
+	q := "INSERT INTO cortes (nombre, tipo_animal, precio_kg, stock_kg) VALUES (?, ?, ?, ?)"
 	resp, err := carniceria.db.Exec(q, corte.Nombre, corte.TipoAnimal, corte.PrecioKilo, corte.StockKilos)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (carniceria *store) Create(corte *model.Corte) (*model.Corte, error) {
 
 func (carniceria *store) Update(id int, corte *model.Corte) (*model.Corte, error) {
 	q := "UPDATE cortes SET precio_kg = ?, stock_kg = ? WHERE id = ?"
-	_, err := carniceria.db.Exec(q, corte.PrecioKilo, corte.StockKilos)
+	_, err := carniceria.db.Exec(q, corte.PrecioKilo, corte.StockKilos, id)
 	if err != nil {
 		return nil, err
 	}
