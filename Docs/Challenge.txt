@@ -28,11 +28,11 @@ Tabla ventas
 ENDPOINTS
 ---------
 
-  POST    /cortes        Crear un corte CHECK
-  GET     /cortes        Listar cortes (filtro opcional ?tipo=res)
-  GET     /cortes/{id}   Obtener un corte
-  PUT     /cortes/{id}   Actualizar precio y stock
-  DELETE  /cortes/{id}   Eliminar un corte
+  POST    /cortes        Crear un corte CHECK // FINISH
+  GET     /cortes        Listar cortes (filtro opcional ?tipo=res) CHECK // FINISH
+  GET     /cortes/{id}   Obtener un corte CHECK 
+  PUT     /cortes/{id}   Actualizar precio y stock CHECK
+  DELETE  /cortes/{id}   Eliminar un corte CHECK
   POST    /ventas        Registrar una venta
   GET     /ventas        Listar ventas
 
@@ -40,7 +40,7 @@ ENDPOINTS
 REGLAS DE NEGOCIO
 -----------------
 
-1. No se puede crear un corte con precio o stock negativo.
+1. No se puede crear un corte con precio o stock negativo. CHECK
 2. Al registrar una venta, se descuenta el stock del corte.
 3. Si no hay suficiente stock, responder 409 Conflict con un mensaje claro.
 4. La venta y el descuento de stock van en UNA transaccion
