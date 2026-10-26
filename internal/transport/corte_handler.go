@@ -27,8 +27,7 @@ func (handler *CorteHandler) HandleCortes(writer http.ResponseWriter, reader *ht
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(cortes)
+		responderJSON(writer, http.StatusOK, cortes)
 	case http.MethodPost:
 		var corte model.Corte
 		if err := json.NewDecoder(reader.Body).Decode(&corte); err != nil {
@@ -40,9 +39,7 @@ func (handler *CorteHandler) HandleCortes(writer http.ResponseWriter, reader *ht
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		writer.WriteHeader(http.StatusCreated)
-		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(creado)
+		responderJSON(writer, http.StatusCreated, creado)
 	default:
 		http.Error(writer, "Metodo no disponible", http.StatusMethodNotAllowed)
 	}
@@ -63,8 +60,7 @@ func (handler *CorteHandler) HandleCorteByID(writer http.ResponseWriter, reader 
 			http.Error(writer, "no se encontro jeje", http.StatusBadRequest)
 			return
 		}
-		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(corte)
+		responderJSON(writer, http.StatusOK, corte)
 	case http.MethodPut:
 		var corte model.Corte
 		if err := json.NewDecoder(reader.Body).Decode((&corte)); err != nil {
@@ -76,8 +72,7 @@ func (handler *CorteHandler) HandleCorteByID(writer http.ResponseWriter, reader 
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(updated)
+		responderJSON(writer, http.StatusOK, updated)
 	case http.MethodDelete:
 		err := handler.service.BorrarCorte(id)
 		if err != nil {

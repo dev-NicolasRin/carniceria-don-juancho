@@ -7,12 +7,14 @@ import (
 )
 
 type Service struct {
-	store store.Store
+	store  store.Store
+	ventas store.VentasStore
 }
 
-func New(servicio store.Store) *Service {
+func New(servicio store.Store, ventas store.VentasStore) *Service {
 	return &Service{
-		store: servicio,
+		store:  servicio,
+		ventas: ventas,
 	}
 }
 

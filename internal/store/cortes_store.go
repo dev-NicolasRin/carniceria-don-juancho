@@ -68,7 +68,7 @@ func (carniceria *store) Create(corte *model.Corte) (*model.Corte, error) {
 		return nil, err
 	}
 	corte.ID = int(id)
-	return corte, nil
+	return carniceria.GetByID(corte.ID) // relee la fila para traer la fecha de creacion generada por SQLite
 }
 
 func (carniceria *store) Update(id int, corte *model.Corte) (*model.Corte, error) {
@@ -77,8 +77,7 @@ func (carniceria *store) Update(id int, corte *model.Corte) (*model.Corte, error
 	if err != nil {
 		return nil, err
 	}
-	corte.ID = id
-	return corte, nil
+	return carniceria.GetByID(id) // relee la fila para devolver los datos reales guardados
 }
 
 func (carniceria *store) Delete(id int) error {
