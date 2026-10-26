@@ -60,6 +60,20 @@ func (handler *VentaHandler) HandleVentas(writer http.ResponseWriter, reader *ht
 	}
 }
 
+func (handler *VentaHandler) HandleVentasDelDia(writer http.ResponseWriter, reader *http.Request) {
+	if reader.Method != http.MethodGet {
+		http.Error(writer, "metodo no disponible", http.StatusMethodNotAllowed)
+		return
+	}
+
+	reporte, err := handler.service.ObtenVentasDelDia()
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	responderJSON(writer, http.StatusOK, reporte)
+}
+
 func responderJSON(writer http.ResponseWriter, status int, cuerpo any) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(status)

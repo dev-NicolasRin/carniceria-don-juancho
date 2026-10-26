@@ -12,6 +12,7 @@ var ErrStockInsuficiente = errors.New("no hay suficiente stock para la venta")
 type VentasStore interface {
 	GetAllVentas() ([]*model.Venta, error)
 	CreateVenta(venta *model.Venta) (*model.Venta, error)
+	VentasDelDia() (*model.ReporteVentasDia, error)
 }
 
 type ventasStore struct {
@@ -68,7 +69,7 @@ func (ventas *ventasStore) CreateVenta(venta *model.Venta) (*model.Venta, error)
 	}
 
 	venta.Total = precioKilo * venta.CantidadKg
-	venta.Fecha = time.Now()
+	venta.Fecha = time.Now().UTC() // UTC para que coincida con las fechas que genera SQLite
 
 	resp, err := tx.Exec(
 		"INSERT INTO ventas (corte_id, cantidad_kg, total, created_at) VALUES (?, ?, ?, ?)",
@@ -95,4 +96,16 @@ func (ventas *ventasStore) CreateVenta(venta *model.Venta) (*model.Venta, error)
 
 	venta.ID = int(id)
 	return venta, nil
+}
+
+func (ventas *ventasStore) VentasDelDia() (*model.ReporteVentasDia, error) {
+	reporte := model.ReporteVentasDia{Fecha: time.Now().UTC().Format("2006-01-02")}
+	err := ventas.db.QueryRow(
+		`SELECT COUNT(*), COALESCE(SUM(total), 0) FROM ventas WHERE DATE(created_at) = ?`,
+		reporte.Fecha,
+	).Scan(&reporte.CantidadVentas, &reporte.Total)
+	if err != nil {
+		return nil, err
+	}
+	return &reporte, nil
 }

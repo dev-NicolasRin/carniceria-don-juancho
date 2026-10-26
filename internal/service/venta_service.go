@@ -11,6 +11,10 @@ func (servicio *Service) ObtenTodasLasVentas() ([]*model.Venta, error) {
 	return servicio.ventas.GetAllVentas()
 }
 
+func (servicio *Service) ObtenVentasDelDia() (*model.ReporteVentasDia, error) {
+	return servicio.ventas.VentasDelDia()
+}
+
 func (servicio *Service) CrearVenta(idCorte int, cantidadKg float64) (*model.Venta, error) {
 	if cantidadKg <= 0 {
 		return nil, ErrCantidadInvalida

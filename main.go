@@ -11,25 +11,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const esquema = `
-CREATE TABLE IF NOT EXISTS cortes (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	nombre TEXT NOT NULL,
-	tipo_animal TEXT NOT NULL,
-	precio_kg REAL NOT NULL,
-	stock_kg REAL NOT NULL,
-	fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS ventas (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	corte_id INTEGER NOT NULL REFERENCES cortes(id),
-	cantidad_kg REAL NOT NULL,
-	total REAL NOT NULL,
-	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-`
-
 func main() {
 	db, err := sql.Open("sqlite3", "carniceria.db?_foreign_keys=on")
 	if err != nil {
@@ -40,7 +21,7 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := db.Exec(esquema); err != nil {
+	if err := store.Migrar(db); err != nil {
 		log.Fatal(err)
 	}
 
@@ -55,6 +36,7 @@ func main() {
 	mux.HandleFunc("/cortes", corteHandler.HandleCortes)
 	mux.HandleFunc("/cortes/", corteHandler.HandleCorteByID)
 	mux.HandleFunc("/ventas", ventaHandler.HandleVentas)
+	mux.HandleFunc("/reportes/ventas-del-dia", ventaHandler.HandleVentasDelDia)
 
 	log.Println("API escuchando en :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

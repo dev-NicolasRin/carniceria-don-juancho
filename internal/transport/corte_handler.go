@@ -3,7 +3,9 @@ package transport
 import (
 	"carniceria-don-juanchito/internal/model"
 	"carniceria-don-juanchito/internal/service"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,7 +24,9 @@ func New(servicio *service.Service) *CorteHandler {
 func (handler *CorteHandler) HandleCortes(writer http.ResponseWriter, reader *http.Request) {
 	switch reader.Method {
 	case http.MethodGet:
-		cortes, err := handler.service.ObtenTodosLosCortes()
+		tipo := reader.URL.Query().Get("tipo")
+		stockBajo, _ := strconv.ParseBool(reader.URL.Query().Get("stock_bajo"))
+		cortes, err := handler.service.ObtenCortes(tipo, stockBajo)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -57,7 +61,11 @@ func (handler *CorteHandler) HandleCorteByID(writer http.ResponseWriter, reader 
 	case http.MethodGet:
 		corte, err := handler.service.ObtenCortePorID(id)
 		if err != nil {
-			http.Error(writer, "no se encontro jeje", http.StatusBadRequest)
+			if errors.Is(err, sql.ErrNoRows) {
+				http.Error(writer, "el corte no existe", http.StatusNotFound)
+				return
+			}
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		responderJSON(writer, http.StatusOK, corte)

@@ -3,10 +3,18 @@ package store
 import (
 	"carniceria-don-juanchito/internal/model"
 	"database/sql"
+	"strings"
 )
 
+const stockBajoKilos = 5 // umbral para el filtro ?stock_bajo=true
+
+type FiltroCortes struct {
+	Tipo      string
+	StockBajo bool
+}
+
 type Store interface {
-	GetAll() ([]*model.Corte, error)
+	GetAll(filtro FiltroCortes) ([]*model.Corte, error)
 	GetByID(id int) (*model.Corte, error)
 	Create(book *model.Corte) (*model.Corte, error)
 	Update(id int, book *model.Corte) (*model.Corte, error)
@@ -21,9 +29,24 @@ func New(db *sql.DB) Store {
 	return &store{db: db}
 }
 
-func (carniceria *store) GetAll() ([]*model.Corte, error) {
+func (carniceria *store) GetAll(filtro FiltroCortes) ([]*model.Corte, error) {
 	q := "SELECT id, nombre, tipo_animal, precio_kg, stock_kg, fecha_creacion FROM cortes"
-	rows, err := carniceria.db.Query(q)
+
+	var condiciones []string
+	var args []any
+	if filtro.Tipo != "" {
+		condiciones = append(condiciones, "tipo_animal = ?")
+		args = append(args, filtro.Tipo)
+	}
+	if filtro.StockBajo {
+		condiciones = append(condiciones, "stock_kg < ?")
+		args = append(args, stockBajoKilos)
+	}
+	if len(condiciones) > 0 {
+		q += " WHERE " + strings.Join(condiciones, " AND ")
+	}
+
+	rows, err := carniceria.db.Query(q, args...)
 
 	if err != nil {
 		return nil, err

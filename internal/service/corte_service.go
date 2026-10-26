@@ -18,8 +18,8 @@ func New(servicio store.Store, ventas store.VentasStore) *Service {
 	}
 }
 
-func (servicio *Service) ObtenTodosLosCortes() ([]*model.Corte, error) {
-	return servicio.store.GetAll()
+func (servicio *Service) ObtenCortes(tipo string, stockBajo bool) ([]*model.Corte, error) {
+	return servicio.store.GetAll(store.FiltroCortes{Tipo: tipo, StockBajo: stockBajo})
 }
 
 func (servicio *Service) ObtenCortePorID(id int) (*model.Corte, error) {
